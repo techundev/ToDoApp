@@ -5,8 +5,8 @@ data class Task(
     val title: String,
     val priority: PriorityStatus,
     val status: TaskStatus,
-    val createdAt: Long,
-    val updatedAt: Long?,
+    val createdAt: String,
+    val updatedAt: String,
     val completedAt: Long?,
     val deletedAt: Long?
 )
