@@ -8,5 +8,6 @@ data class Task(
     val createdAt: String,
     val updatedAt: String,
     val completedAt: Long?,
-    val deletedAt: Long?
+    val deletedAt: Long?,
+    val isCompleted: Boolean
 )

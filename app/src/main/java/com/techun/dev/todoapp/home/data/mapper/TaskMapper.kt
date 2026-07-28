@@ -12,5 +12,6 @@ fun TaskEntity.toDomain() = Task(
     createdAt = createdAt.toDateString(),
     updatedAt = updatedAt.toDateString(),
     completedAt = completedAt,
-    deletedAt = deletedAt
+    deletedAt = deletedAt,
+    isCompleted = isCompleted
 )

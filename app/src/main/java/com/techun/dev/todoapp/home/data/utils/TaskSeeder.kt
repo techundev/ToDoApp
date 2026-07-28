@@ -46,7 +46,8 @@ object TaskSeeder {
                 createdAt = now,
                 updatedAt = now,
                 completedAt = now,
-                deletedAt = null
+                deletedAt = null,
+                isCompleted = true
             ),
             TaskEntity(
                 title = "Actualizar Terminal Bank",
@@ -55,35 +56,9 @@ object TaskSeeder {
                 createdAt = now,
                 updatedAt = now,
                 completedAt = now,
-                deletedAt = null
-            ),
-            TaskEntity(
-                title = "Test 2",
-                priority = PriorityStatus.MEDIUM,
-                status = TaskStatus.PENDING,
-                createdAt = now,
-                updatedAt = now,
-                completedAt = now,
-                deletedAt = null
-            ),
-            TaskEntity(
-                title = "Test 3",
-                priority = PriorityStatus.MEDIUM,
-                status = TaskStatus.PENDING,
-                createdAt = now,
-                updatedAt = now,
-                completedAt = now,
-                deletedAt = null
-            ),
-            TaskEntity(
-                title = "Test 4",
-                priority = PriorityStatus.MEDIUM,
-                status = TaskStatus.COMPLETED,
-                createdAt = now,
-                updatedAt = now,
-                completedAt = now,
-                deletedAt = null
-            ),
+                deletedAt = null,
+                isCompleted = true
+            )
         )
 
         dao.insertAll(tasks)

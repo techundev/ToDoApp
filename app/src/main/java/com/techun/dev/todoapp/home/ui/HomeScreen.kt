@@ -1,12 +1,16 @@
 package com.techun.dev.todoapp.home.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.Task
+import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -30,28 +35,85 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+
             ToDoText(text = "ToDo")
-            TaskSection(title = "Pendientes", state = uiState.pending)
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            TaskSection(title = "Completadas", state = uiState.completed)
+            HomeContent(uiState = uiState, onDelete = {}, onComplete = {task-> viewModel.taskToggleCompleted(task)})
         }
     }
 }
 
 @Composable
-private fun TaskSection(title: String, state: TaskSectionState) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
-        ToDoText(text = title, style = MaterialTheme.typography.titleMedium)
+private fun HomeContent(
+    uiState: HomeUiState,
+    onDelete: (Task) -> Unit,
+    onComplete: (Task) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        taskSection(
+            key = "pending",
+            title = "Pendientes",
+            state = uiState.pending,
+            onDelete = onDelete,
+            onComplete = onComplete
+        )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        item(key = "divider") {
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        }
 
-        when (state) {
-            TaskSectionState.Loading -> TaskSectionLoading()
-            TaskSectionState.Empty -> TaskSectionEmpty()
-            is TaskSectionState.Success -> TaskList(tasks = state.tasks)
-            is TaskSectionState.Error -> TaskSectionError(message = state.message)
+        taskSection(
+            key = "completed",
+            title = "Completadas",
+            state = uiState.completed,
+            onDelete = onDelete,
+            onComplete = onComplete
+        )
+    }
+}
+
+private fun LazyListScope.taskSection(
+    key: String,
+    title: String,
+    state: TaskSectionState,
+    onDelete: (Task) -> Unit,
+    onComplete: (Task) -> Unit
+) {
+    item(key = "${key}_header", contentType = "header") {
+        ToDoText(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+
+    when (state) {
+        TaskSectionState.Loading -> item(key = "${key}_loading", contentType = "loading") {
+            TaskSectionLoading()
+        }
+
+        TaskSectionState.Empty -> item(key = "${key}_empty", contentType = "empty") {
+            TaskSectionEmpty()
+        }
+
+        is TaskSectionState.Error -> item(key = "${key}_error", contentType = "error") {
+            TaskSectionError(message = state.message)
+        }
+
+        is TaskSectionState.Success -> items(
+            items = state.tasks,
+            key = { it.id },
+            contentType = { "task" }) { task ->
+            ToDoTaskItem(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                task = task,
+                onDelete = onDelete,
+                onComplete = onComplete
+            )
         }
     }
 }
@@ -84,19 +146,4 @@ private fun TaskSectionError(message: String) {
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.error
     )
-}
-
-@Composable
-private fun TaskList(tasks: List<Task>) {
-    Column {
-        tasks.forEach { task ->
-            Column(modifier = Modifier.fillMaxWidth()) {
-                ToDoText(text = task.title)
-                ToDoText(text = task.priority.name)
-                ToDoText(text = task.status.name)
-                ToDoText(text = task.createdAt)
-            }
-
-        }
-    }
 }
