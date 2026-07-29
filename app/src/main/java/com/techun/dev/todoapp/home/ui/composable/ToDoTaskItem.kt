@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,15 +48,15 @@ fun ToDoTaskItemPreview() {
 
 @Composable
 fun ToDoTaskItem(
-    modifier: Modifier = Modifier,
-    task: Task,
-    onDelete: (Task) -> Unit,
-    onComplete: (Task) -> Unit
+    modifier: Modifier = Modifier, task: Task, onDelete: (Task) -> Unit, onComplete: (Task) -> Unit
 ) {
+
+    val contentAlpha = if (task.isCompleted) DisabledAlpha else 1f
+
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .alpha(contentAlpha),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -64,7 +65,7 @@ fun ToDoTaskItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(15.dp),
+                .padding(start = 5.dp, end = 5.dp, top = 15.dp, bottom = 15.dp),
             horizontalArrangement = Arrangement.spacedBy(15.dp)
         ) {
 
@@ -76,27 +77,25 @@ fun ToDoTaskItem(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Cancel,
-                    contentDescription = null
+                    imageVector = Icons.Outlined.Cancel, contentDescription = null
                 )
             }
 
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 ToDoText(
                     text = task.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold
                 )
-                ToDoText(text = task.priority.name)
+                ToDoPriorityBadge(priority = task.priority)
             }
 
             Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = { onComplete(task) }
-            )
+                checked = task.isCompleted, onCheckedChange = { onComplete(task) })
         }
     }
 }
+
+private const val DisabledAlpha = 0.5f

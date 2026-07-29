@@ -1,9 +1,10 @@
 package com.techun.dev.todoapp.home.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,24 +20,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.Task
+import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButtom
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold { innerPadding ->
+    Scaffold(
+        floatingActionButton = {
+            ToDoTaskFloatingActionButtom { }
+        }) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
 
-            ToDoText(text = "ToDo")
+            Spacer(modifier = Modifier.height(35.dp))
+
+            ToDoText(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = "ToDo",
+                style = MaterialTheme.typography.displayLarge
+            )
+
+            Spacer(modifier = Modifier.height(35.dp))
+
             HomeContent(
                 uiState = uiState,
                 onDelete = {},
@@ -53,25 +68,32 @@ private fun HomeContent(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         taskSection(
             key = "pending",
-            title = "Pendientes",
             state = uiState.pending,
             onDelete = onDelete,
             onComplete = onComplete
         )
 
-        item(key = "divider") {
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        if (uiState.pending !is TaskSectionState.Empty &&
+            uiState.completed !is TaskSectionState.Empty
+        ) {
+            item(
+                key = "divider"
+            ) {
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(Color.LightGray)
+                )
+            }
         }
 
         taskSection(
             key = "completed",
-            title = "Completadas",
             state = uiState.completed,
             onDelete = onDelete,
             onComplete = onComplete
@@ -80,27 +102,11 @@ private fun HomeContent(
 }
 
 private fun LazyListScope.taskSection(
-    key: String,
-    title: String,
-    state: TaskSectionState,
-    onDelete: (Task) -> Unit,
-    onComplete: (Task) -> Unit
+    key: String, state: TaskSectionState, onDelete: (Task) -> Unit, onComplete: (Task) -> Unit
 ) {
-    item(key = "${key}_header", contentType = "header") {
-        ToDoText(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-    }
-
     when (state) {
         TaskSectionState.Loading -> item(key = "${key}_loading", contentType = "loading") {
             TaskSectionLoading()
-        }
-
-        TaskSectionState.Empty -> item(key = "${key}_empty", contentType = "empty") {
-            TaskSectionEmpty()
         }
 
         is TaskSectionState.Error -> item(key = "${key}_error", contentType = "error") {
@@ -114,12 +120,14 @@ private fun LazyListScope.taskSection(
             ToDoTaskItem(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .animateItem() ,
+                    .animateItem(),
                 task = task,
                 onDelete = onDelete,
                 onComplete = onComplete
             )
         }
+
+        else -> Unit
     }
 }
 
