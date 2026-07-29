@@ -109,7 +109,7 @@ private fun LazyListScope.taskSection(
 
         is TaskSectionState.Success -> items(
             items = state.tasks,
-            key = { it.id },
+            key = { "${key}_${it.id}" },
             contentType = { "task" }) { task ->
             ToDoTaskItem(
                 modifier = Modifier

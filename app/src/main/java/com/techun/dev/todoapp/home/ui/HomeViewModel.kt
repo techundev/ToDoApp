@@ -7,6 +7,7 @@ import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.domain.usecase.GetCompletedTasksUseCase
 import com.techun.dev.todoapp.home.domain.usecase.GetPendingTasksUseCase
 import com.techun.dev.todoapp.home.domain.usecase.ToggleTaskCompletedUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -106,11 +107,13 @@ class HomeViewModel(
         return newPendingState to newCompletedState
     }
 
+    private val toggleJobs = mutableMapOf<Long, Job>()
     fun taskToggleCompleted(task: Task) {
         val optimisticValue = !(completionOverrides.value[task.id] ?: task.isCompleted)
         completionOverrides.update { it + (task.id to optimisticValue) }
 
-        viewModelScope.launch {
+        toggleJobs[task.id]?.cancel()
+        toggleJobs[task.id] = viewModelScope.launch {
             toggleTaskCompletedUseCase(task)
                 .onFailure {
                     completionOverrides.update { current -> current - task.id }
@@ -118,6 +121,7 @@ class HomeViewModel(
                 .onSuccess {
                     completionOverrides.update { current -> current - task.id }
                 }
+            toggleJobs.remove(task.id)
         }
     }
 }
