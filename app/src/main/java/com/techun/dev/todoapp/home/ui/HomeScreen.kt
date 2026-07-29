@@ -37,7 +37,10 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
         ) {
 
             ToDoText(text = "ToDo")
-            HomeContent(uiState = uiState, onDelete = {}, onComplete = {task-> viewModel.taskToggleCompleted(task)})
+            HomeContent(
+                uiState = uiState,
+                onDelete = {},
+                onComplete = { task -> viewModel.taskToggleCompleted(task) })
         }
     }
 }
@@ -109,7 +112,9 @@ private fun LazyListScope.taskSection(
             key = { it.id },
             contentType = { "task" }) { task ->
             ToDoTaskItem(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .animateItem() ,
                 task = task,
                 onDelete = onDelete,
                 onComplete = onComplete

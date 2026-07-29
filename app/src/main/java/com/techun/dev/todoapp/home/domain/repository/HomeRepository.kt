@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface HomeRepository {
     fun getPendingTask(): Flow<HomeResult>
     fun getCompletedTask(): Flow<HomeResult>
+
+    suspend fun updateTaskCompletion(taskId: Long, isCompleted: Boolean): Result<Unit>
 }

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.techun.dev.todoapp.home.data.local.entity.TaskEntity
+import com.techun.dev.todoapp.home.domain.model.TaskStatus
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -29,4 +30,22 @@ interface TaskDao {
 
     @Insert
     suspend fun insertAll(tasks: List<TaskEntity>)
+
+    @Query(
+        """
+        UPDATE task
+        SET status = :status,
+            is_completed = :isCompleted,
+            completed_at = :completedAt,
+            updated_at = :updatedAt
+        WHERE id = :id
+        """
+    )
+    suspend fun updateCompletion(
+        id: Long,
+        status: TaskStatus,
+        isCompleted: Boolean,
+        completedAt: Long?,
+        updatedAt: Long
+    ): Int
 }

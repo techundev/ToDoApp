@@ -6,6 +6,7 @@ import com.techun.dev.todoapp.home.data.repository.TaskRepositoryImpl
 import com.techun.dev.todoapp.home.domain.repository.HomeRepository
 import com.techun.dev.todoapp.home.domain.usecase.GetCompletedTasksUseCase
 import com.techun.dev.todoapp.home.domain.usecase.GetPendingTasksUseCase
+import com.techun.dev.todoapp.home.domain.usecase.ToggleTaskCompletedUseCase
 import com.techun.dev.todoapp.home.ui.HomeViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind
@@ -36,5 +37,6 @@ val homeModule = module {
     singleOf(::TaskRepositoryImpl) { bind<HomeRepository>() }
     factoryOf(::GetPendingTasksUseCase)
     factoryOf(::GetCompletedTasksUseCase)
+    factoryOf(::ToggleTaskCompletedUseCase)
     viewModelOf(::HomeViewModel)
 }
