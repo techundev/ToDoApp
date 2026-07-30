@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.Task
-import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButtom
+import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -34,10 +34,11 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         floatingActionButton = {
-            ToDoTaskFloatingActionButtom { }
+            ToDoTaskFloatingActionButton { }
         }) { innerPadding ->
         Column(
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
@@ -54,7 +55,7 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
 
             HomeContent(
                 uiState = uiState,
-                onDelete = {},
+                onDelete = { task -> viewModel.deleteTask(task) },
                 onComplete = { task -> viewModel.taskToggleCompleted(task) })
         }
     }
@@ -90,6 +91,8 @@ private fun HomeContent(
                         .background(Color.LightGray)
                 )
             }
+        } else {
+            //Si ambas son listas vacias
         }
 
         taskSection(

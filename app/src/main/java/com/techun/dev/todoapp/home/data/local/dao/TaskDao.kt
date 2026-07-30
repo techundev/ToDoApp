@@ -48,4 +48,7 @@ interface TaskDao {
         completedAt: Long?,
         updatedAt: Long
     ): Int
+
+    @Query("DELETE FROM task WHERE id = :id")
+    suspend fun deleteById(id: Long): Int
 }

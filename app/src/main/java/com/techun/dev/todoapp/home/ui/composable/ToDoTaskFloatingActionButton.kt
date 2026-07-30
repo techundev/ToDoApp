@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun ToDoTaskFloatingActionButtom(onClick: () -> Unit) {
+fun ToDoTaskFloatingActionButton(onClick: () -> Unit) {
     FloatingActionButton(
         onClick = { onClick() },
         shape = MaterialTheme.shapes.small,

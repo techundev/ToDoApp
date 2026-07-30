@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.techun.dev.todoapp.home.domain.model.HomeResult
 import com.techun.dev.todoapp.home.domain.model.Task
+import com.techun.dev.todoapp.home.domain.usecase.DeleteTaskByIdUseCase
 import com.techun.dev.todoapp.home.domain.usecase.GetCompletedTasksUseCase
 import com.techun.dev.todoapp.home.domain.usecase.GetPendingTasksUseCase
 import com.techun.dev.todoapp.home.domain.usecase.ToggleTaskCompletedUseCase
@@ -35,40 +36,38 @@ data class HomeUiState(
 class HomeViewModel(
     getPendingTasksUseCase: GetPendingTasksUseCase,
     getCompletedTasksUseCase: GetCompletedTasksUseCase,
-    private val toggleTaskCompletedUseCase: ToggleTaskCompletedUseCase
+    private val toggleTaskCompletedUseCase: ToggleTaskCompletedUseCase,
+    private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase
 ) : ViewModel() {
     private val pendingState: Flow<TaskSectionState> =
-        getPendingTasksUseCase()
-            .map { it.toTaskSectionState() }
+        getPendingTasksUseCase().map { it.toTaskSectionState() }
             .onStart { emit(TaskSectionState.Loading) }
 
     private val completedState: Flow<TaskSectionState> =
-        getCompletedTasksUseCase()
-            .map { it.toTaskSectionState() }
+        getCompletedTasksUseCase().map { it.toTaskSectionState() }
             .onStart { emit(TaskSectionState.Loading) }
 
     private val completionOverrides = MutableStateFlow<Map<Long, Boolean>>(emptyMap())
-    val uiState: StateFlow<HomeUiState> =
-        combine(
-            pendingState,
-            completedState,
-            completionOverrides
-        ) { pending, completed, overrides ->
-            val (newPending, newCompleted) = reconcileSections(pending, completed, overrides)
-            HomeUiState(
-                pending = newPending,
-                completed = newCompleted
-            )
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HomeUiState()
+    private val pendingDeletions = MutableStateFlow<Set<Long>>(emptySet())
+
+    val uiState: StateFlow<HomeUiState> = combine(
+        pendingState, completedState, completionOverrides, pendingDeletions
+    ) { pending, completed, overrides, deletions ->
+        val (newPending, newCompleted) = reconcileSections(pending, completed, overrides, deletions)
+        HomeUiState(
+            pending = newPending, completed = newCompleted
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = HomeUiState()
+    )
 
     private fun reconcileSections(
         pending: TaskSectionState,
         completed: TaskSectionState,
-        overrides: Map<Long, Boolean>
+        overrides: Map<Long, Boolean>,
+        deletions: Set<Long>
     ): Pair<TaskSectionState, TaskSectionState> {
         val pendingTask = (pending as? TaskSectionState.Success)?.tasks.orEmpty()
         val completedTask = (completed as? TaskSectionState.Success)?.tasks.orEmpty()
@@ -81,10 +80,12 @@ class HomeViewModel(
         pendingTask.forEach { merged[it.id] = it }
         completedTask.forEach { merged[it.id] = it }
 
-        val resolved = merged.values.map { task ->
-            val override = overrides[task.id]
-            if (override != null && override != task.isCompleted) task.copy(isCompleted = override) else task
-        }
+        val resolved = merged.values
+            .filterNot { it.id in deletions }
+            .map { task ->
+                val override = overrides[task.id]
+                if (override != null && override != task.isCompleted) task.copy(isCompleted = override) else task
+            }
 
         val newPending = resolved.filter { !it.isCompleted }
         val newCompleted = resolved.filter { it.isCompleted }
@@ -114,22 +115,33 @@ class HomeViewModel(
 
         toggleJobs[task.id]?.cancel()
         toggleJobs[task.id] = viewModelScope.launch {
-            toggleTaskCompletedUseCase(task)
-                .onFailure {
-                    completionOverrides.update { current -> current - task.id }
-                }
-                .onSuccess {
-                    completionOverrides.update { current -> current - task.id }
-                }
+            toggleTaskCompletedUseCase(task).onFailure {
+                completionOverrides.update { current -> current - task.id }
+            }.onSuccess {
+                completionOverrides.update { current -> current - task.id }
+            }
             toggleJobs.remove(task.id)
+        }
+    }
+
+
+    fun deleteTask(task: Task) {
+        toggleJobs[task.id]?.cancel()
+        toggleJobs.remove(task.id)
+        pendingDeletions.update { it + task.id }
+
+        viewModelScope.launch {
+            deleteTaskByIdUseCase(taskId = task.id).onFailure {
+                pendingDeletions.update { it - task.id }
+            }.onSuccess {
+                completionOverrides.update { current -> current - task.id }
+            }
         }
     }
 }
 
-
-private fun HomeResult.toTaskSectionState() =
-    when (this) {
-        is HomeResult.Success -> TaskSectionState.Success(tasks)
-        HomeResult.Empty -> TaskSectionState.Empty
-        is HomeResult.Error -> TaskSectionState.Error(message)
-    }
+private fun HomeResult.toTaskSectionState() = when (this) {
+    is HomeResult.Success -> TaskSectionState.Success(tasks)
+    HomeResult.Empty -> TaskSectionState.Empty
+    is HomeResult.Error -> TaskSectionState.Error(message)
+}

@@ -4,6 +4,7 @@ import androidx.room.Room
 import com.techun.dev.todoapp.home.data.local.database.TaskDatabase
 import com.techun.dev.todoapp.home.data.repository.TaskRepositoryImpl
 import com.techun.dev.todoapp.home.domain.repository.HomeRepository
+import com.techun.dev.todoapp.home.domain.usecase.DeleteTaskByIdUseCase
 import com.techun.dev.todoapp.home.domain.usecase.GetCompletedTasksUseCase
 import com.techun.dev.todoapp.home.domain.usecase.GetPendingTasksUseCase
 import com.techun.dev.todoapp.home.domain.usecase.ToggleTaskCompletedUseCase
@@ -38,5 +39,6 @@ val homeModule = module {
     factoryOf(::GetPendingTasksUseCase)
     factoryOf(::GetCompletedTasksUseCase)
     factoryOf(::ToggleTaskCompletedUseCase)
+    factoryOf(::DeleteTaskByIdUseCase)
     viewModelOf(::HomeViewModel)
 }

@@ -10,35 +10,32 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 class TaskRepositoryImpl(private val dao: TaskDao) : HomeRepository {
-    override fun getPendingTask(): Flow<HomeResult> =
-        dao.getPendingTasks().map { entities ->
-            val tasks = entities.map { it.toDomain() }
+    override fun getPendingTask(): Flow<HomeResult> = dao.getPendingTasks().map { entities ->
+        val tasks = entities.map { it.toDomain() }
 
-            if (tasks.isEmpty()) {
-                HomeResult.Empty
-            } else {
-                HomeResult.Success(tasks)
-            }
-        }.catch {
-            emit(HomeResult.Error(it.message ?: "Error desconocido"))
+        if (tasks.isEmpty()) {
+            HomeResult.Empty
+        } else {
+            HomeResult.Success(tasks)
         }
+    }.catch {
+        emit(HomeResult.Error(it.message ?: "Error desconocido"))
+    }
 
-    override fun getCompletedTask(): Flow<HomeResult> =
-        dao.getCompletedTasks().map { entities ->
-            val tasks = entities.map { it.toDomain() }
+    override fun getCompletedTask(): Flow<HomeResult> = dao.getCompletedTasks().map { entities ->
+        val tasks = entities.map { it.toDomain() }
 
-            if (tasks.isEmpty()) {
-                HomeResult.Empty
-            } else {
-                HomeResult.Success(tasks)
-            }
-        }.catch {
-            emit(HomeResult.Error(it.message ?: "Error desconocido"))
+        if (tasks.isEmpty()) {
+            HomeResult.Empty
+        } else {
+            HomeResult.Success(tasks)
         }
+    }.catch {
+        emit(HomeResult.Error(it.message ?: "Error desconocido"))
+    }
 
     override suspend fun updateTaskCompletion(
-        taskId: Long,
-        isCompleted: Boolean
+        taskId: Long, isCompleted: Boolean
     ): Result<Unit> = runCatching {
         val now = System.currentTimeMillis()
         val rowsAffected = dao.updateCompletion(
@@ -49,5 +46,10 @@ class TaskRepositoryImpl(private val dao: TaskDao) : HomeRepository {
             updatedAt = now
         )
         check(rowsAffected > 0) { "Task with id $taskId not found" }
+    }
+
+    override suspend fun deleteTask(taskId: Long): Result<Unit> = runCatching {
+        val deleteData = dao.deleteById(taskId)
+        check(deleteData > 0) { "Task with id $taskId not found" }
     }
 }
