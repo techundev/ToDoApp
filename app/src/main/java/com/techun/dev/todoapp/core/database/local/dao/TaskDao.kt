@@ -1,9 +1,9 @@
-package com.techun.dev.todoapp.home.data.local.dao
+package com.techun.dev.todoapp.core.database.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.techun.dev.todoapp.home.data.local.entity.TaskEntity
+import com.techun.dev.todoapp.core.database.local.entity.TaskEntity
 import com.techun.dev.todoapp.home.domain.model.TaskStatus
 import kotlinx.coroutines.flow.Flow
 
@@ -31,6 +31,9 @@ interface TaskDao {
     @Insert
     suspend fun insertAll(tasks: List<TaskEntity>)
 
+    @Insert
+    suspend fun insertTask(tasks: TaskEntity): Long
+
     @Query(
         """
         UPDATE task
@@ -42,11 +45,7 @@ interface TaskDao {
         """
     )
     suspend fun updateCompletion(
-        id: Long,
-        status: TaskStatus,
-        isCompleted: Boolean,
-        completedAt: Long?,
-        updatedAt: Long
+        id: Long, status: TaskStatus, isCompleted: Boolean, completedAt: Long?, updatedAt: Long
     ): Int
 
     @Query("DELETE FROM task WHERE id = :id")

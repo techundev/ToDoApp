@@ -1,4 +1,4 @@
-package com.techun.dev.todoapp.home.data.local.entity
+package com.techun.dev.todoapp.core.database.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -13,8 +13,8 @@ data class TaskEntity(
     val priority: PriorityStatus,
     val status: TaskStatus,
     @ColumnInfo(name = "created_at") val createdAt: Long,
-    @ColumnInfo(name = "updated_at") val updatedAt: Long,
-    @ColumnInfo(name = "completed_at") val completedAt: Long?,
-    @ColumnInfo(name = "deleted_at") val deletedAt: Long?,
+    @ColumnInfo(name = "updated_at") val updatedAt: Long? = null,
+    @ColumnInfo(name = "completed_at") val completedAt: Long? = null,
+    @ColumnInfo(name = "deleted_at") val deletedAt: Long? = null,
     @ColumnInfo(name = "is_completed") val isCompleted: Boolean = false
 )

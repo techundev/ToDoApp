@@ -1,6 +1,6 @@
 package com.techun.dev.todoapp.home.data.repository
 
-import com.techun.dev.todoapp.home.data.local.dao.TaskDao
+import com.techun.dev.todoapp.core.database.local.dao.TaskDao
 import com.techun.dev.todoapp.home.data.mapper.toDomain
 import com.techun.dev.todoapp.home.domain.model.HomeResult
 import com.techun.dev.todoapp.home.domain.model.TaskStatus

@@ -1,9 +1,10 @@
 package com.techun.dev.todoapp
 
 import android.app.Application
-import com.techun.dev.todoapp.home.data.local.dao.TaskDao
+import com.techun.dev.todoapp.core.database.local.dao.TaskDao
+import com.techun.dev.todoapp.core.di.databaseModule
+import com.techun.dev.todoapp.create.di.addTaskModule
 import com.techun.dev.todoapp.home.data.utils.TaskSeeder
-import com.techun.dev.todoapp.home.di.databaseModule
 import com.techun.dev.todoapp.home.di.homeModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +26,9 @@ class ToDoApp : Application(), KoinComponent {
             androidLogger()
             androidContext(this@ToDoApp)
             modules(
-                databaseModule, homeModule
+                databaseModule,
+                homeModule,
+                addTaskModule
             )
         }
 
