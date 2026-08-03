@@ -1,5 +1,6 @@
 package com.techun.dev.todoapp.home.ui
 
+import androidx.annotation.RawRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -23,6 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.techun.dev.todoapp.R
 import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
@@ -31,10 +39,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel(),
-    onCreateNewTask: () -> Unit
+    viewModel: HomeViewModel = koinViewModel(), onCreateNewTask: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     Scaffold(
         floatingActionButton = {
             ToDoTaskFloatingActionButton { onCreateNewTask() }
@@ -56,10 +64,23 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(35.dp))
 
-            HomeContent(
-                uiState = uiState,
-                onDelete = { task -> viewModel.deleteTask(task) },
-                onComplete = { task -> viewModel.taskToggleCompleted(task) })
+            when {
+                (uiState.pending is TaskSectionState.Loading) && (uiState.completed is TaskSectionState.Loading) -> {
+                    TaskSectionLoading()
+                }
+
+                (uiState.pending is TaskSectionState.Empty) && (uiState.completed is TaskSectionState.Empty) -> {
+                    TaskSectionEmpty()
+                }
+
+                else -> {
+                    HomeContent(
+                        uiState = uiState,
+                        onDelete = { task -> viewModel.deleteTask(task) },
+                        onComplete = { task -> viewModel.taskToggleCompleted(task) }
+                    )
+                }
+            }
         }
     }
 }
@@ -75,15 +96,11 @@ private fun HomeContent(
         modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         taskSection(
-            key = "pending",
-            state = uiState.pending,
-            onDelete = onDelete,
-            onComplete = onComplete
+            key = "pending", state = uiState.pending, onDelete = onDelete, onComplete = onComplete
         )
 
-        if (uiState.pending !is TaskSectionState.Empty &&
-            uiState.completed !is TaskSectionState.Empty
-        ) {
+        if (uiState.pending !is TaskSectionState.Empty && uiState.completed !is TaskSectionState.Empty) {
+
             item(
                 key = "divider"
             ) {
@@ -94,8 +111,6 @@ private fun HomeContent(
                         .background(Color.LightGray)
                 )
             }
-        } else {
-            //Si ambas son listas vacias
         }
 
         taskSection(
@@ -111,9 +126,9 @@ private fun LazyListScope.taskSection(
     key: String, state: TaskSectionState, onDelete: (Task) -> Unit, onComplete: (Task) -> Unit
 ) {
     when (state) {
-        TaskSectionState.Loading -> item(key = "${key}_loading", contentType = "loading") {
-            TaskSectionLoading()
-        }
+//        TaskSectionState.Loading -> item(key = "${key}_loading", contentType = "loading") {
+//            TaskSectionLoading()
+//        }
 
         is TaskSectionState.Error -> item(key = "${key}_error", contentType = "error") {
             TaskSectionError(message = state.message)
@@ -141,22 +156,50 @@ private fun LazyListScope.taskSection(
 fun TaskSectionLoading() {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp), contentAlignment = Alignment.Center
+            .fillMaxSize()
+            .height(120.dp),
+        contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }
 }
 
 @Composable
-private fun TaskSectionEmpty() {
-    ToDoText(
-        text = "No hay tareas",
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-}
+private fun TaskSectionEmpty(
+    modifier: Modifier = Modifier,
+    @RawRes rawRes: Int = R.raw.embty_cart
+) {
 
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(rawRes))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+
+    Column(
+        modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.size(300.dp)
+        )
+
+        ToDoText(
+            text = "TODO's you add will appear here",
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+        )
+    }
+
+}
 
 @Composable
 private fun TaskSectionError(message: String) {

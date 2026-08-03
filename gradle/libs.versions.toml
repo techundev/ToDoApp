@@ -13,6 +13,7 @@ composeBom = "2026.06.01"
 roomRuntime = "2.8.4"
 nav3 = "1.1.5"
 kotlinxSerialization ="1.11.0"
+lottie = "6.7.1"
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
@@ -45,6 +46,9 @@ androidx-nav3-ui = { group ="androidx.navigation3", name ="navigation3-ui", vers
 #Serealization
 kotlinx-serialization-core = {group ="org.jetbrains.kotlinx", name ="kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
 kotlinx-serialization-json = {group ="org.jetbrains.kotlinx", name ="kotlinx-serialization-json", version.ref = "kotlinxSerialization"  }
+
+#lottie
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

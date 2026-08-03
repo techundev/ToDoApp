@@ -32,8 +32,8 @@ class ToDoApp : Application(), KoinComponent {
             )
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            TaskSeeder.seedIfEmpty(taskDao)
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            TaskSeeder.seedIfEmpty(taskDao)
+//        }
     }
 }
