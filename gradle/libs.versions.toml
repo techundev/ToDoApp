@@ -11,8 +11,11 @@ kotlin = "2.4.10"
 ksp = "2.3.4"
 composeBom = "2026.06.01"
 roomRuntime = "2.8.4"
+nav3 = "1.1.5"
+kotlinxSerialization ="1.11.0"
 
 [libraries]
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
@@ -34,6 +37,14 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
+
+#nav
+androidx-nav3-runtime = { group ="androidx.navigation3", name ="navigation3-runtime", version.ref ="nav3"}
+androidx-nav3-ui = { group ="androidx.navigation3", name ="navigation3-ui", version.ref ="nav3"}
+
+#Serealization
+kotlinx-serialization-core = {group ="org.jetbrains.kotlinx", name ="kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
+kotlinx-serialization-json = {group ="org.jetbrains.kotlinx", name ="kotlinx-serialization-json", version.ref = "kotlinxSerialization"  }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

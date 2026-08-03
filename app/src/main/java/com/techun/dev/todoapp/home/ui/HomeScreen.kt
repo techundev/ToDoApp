@@ -30,11 +30,14 @@ import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel(),
+    onCreateNewTask: () -> Unit
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         floatingActionButton = {
-            ToDoTaskFloatingActionButton { }
+            ToDoTaskFloatingActionButton { onCreateNewTask() }
         }) { innerPadding ->
         Column(
             modifier = Modifier
