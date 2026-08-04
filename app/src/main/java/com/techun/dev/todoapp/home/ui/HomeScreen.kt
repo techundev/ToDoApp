@@ -1,6 +1,12 @@
 package com.techun.dev.todoapp.home.ui
 
 import androidx.annotation.RawRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +38,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.techun.dev.todoapp.R
 import com.techun.dev.todoapp.core.composables.ToDoText
+import com.techun.dev.todoapp.home.domain.model.HomeScreenPhase
 import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
@@ -42,6 +49,16 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(), onCreateNewTask: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val currentPhase = when {
+        uiState.pending is TaskSectionState.Loading && uiState.completed is TaskSectionState.Loading ->
+            HomeScreenPhase.Loading
+
+        uiState.pending is TaskSectionState.Empty && uiState.completed is TaskSectionState.Empty ->
+            HomeScreenPhase.Empty
+
+        else -> HomeScreenPhase.Content
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -64,23 +81,45 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(35.dp))
 
-            when {
-                (uiState.pending is TaskSectionState.Loading) && (uiState.completed is TaskSectionState.Loading) -> {
-                    TaskSectionLoading()
-                }
-
-                (uiState.pending is TaskSectionState.Empty) && (uiState.completed is TaskSectionState.Empty) -> {
-                    TaskSectionEmpty()
-                }
-
-                else -> {
-                    HomeContent(
+            AnimatedContent(
+                targetState = currentPhase,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(300)) + scaleIn(
+                        initialScale = 0.95f,
+                        animationSpec = tween(300)
+                    ))
+                        .togetherWith(fadeOut(animationSpec = tween(150)))
+                },
+                label = "homeScreenPhaseTransition"
+            ) { phase ->
+                when (phase) {
+                    HomeScreenPhase.Loading -> TaskSectionLoading()
+                    HomeScreenPhase.Empty -> TaskSectionEmpty()
+                    HomeScreenPhase.Content -> HomeContent(
                         uiState = uiState,
                         onDelete = { task -> viewModel.deleteTask(task) },
                         onComplete = { task -> viewModel.taskToggleCompleted(task) }
                     )
                 }
             }
+
+//            when {
+//                (uiState.pending is TaskSectionState.Loading) && (uiState.completed is TaskSectionState.Loading) -> {
+//                    TaskSectionLoading()
+//                }
+//
+//                (uiState.pending is TaskSectionState.Empty) && (uiState.completed is TaskSectionState.Empty) -> {
+//                    TaskSectionEmpty()
+//                }
+//
+//                else -> {
+//                    HomeContent(
+//                        uiState = uiState,
+//                        onDelete = { task -> viewModel.deleteTask(task) },
+//                        onComplete = { task -> viewModel.taskToggleCompleted(task) }
+//                    )
+//                }
+//            }
         }
     }
 }
@@ -189,7 +228,7 @@ private fun TaskSectionEmpty(
 
         ToDoText(
             text = "TODO's you add will appear here",
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.outline
         )
 
         Spacer(
@@ -198,7 +237,6 @@ private fun TaskSectionEmpty(
                 .height(60.dp)
         )
     }
-
 }
 
 @Composable
