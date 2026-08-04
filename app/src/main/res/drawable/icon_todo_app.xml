@@ -1,0 +1,42 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="50dp"
+    android:height="50dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+
+    <group
+        android:name="todo_app"
+        android:pivotX="512"
+        android:pivotY="512"
+        android:scaleX="0.3"
+        android:scaleY="0.3">
+
+        <clip-path android:pathData="M224,0L800,0A224,224 0,0 1,1024 224L1024,800A224,224 0,0 1,800 1024L224,1024A224,224 0,0 1,0 800L0,224A224,224 0,0 1,224 0z" />
+
+        <path
+            android:fillColor="#ffffff"
+            android:pathData="M224,0L800,0A224,224 0,0 1,1024 224L1024,800A224,224 0,0 1,800 1024L224,1024A224,224 0,0 1,0 800L0,224A224,224 0,0 1,224 0z" />
+
+        <path
+            android:fillAlpha="0.313726"
+            android:fillColor="#FFEF53"
+            android:pathData="M136,-97L872,-97A180,180 0,0 1,1052 83L1052,818A180,180 0,0 1,872 998L136,998A180,180 0,0 1,-44 818L-44,83A180,180 0,0 1,136 -97z" />
+
+        <path
+            android:fillColor="#1E88F8"
+            android:pathData="M142.7,309.5L848.1,266.3A180,180 71.1,0 1,1038.7 435L1062.6,825.4A180,180 116.5,0 1,893.9 1016.1L188.5,1059.2A180,180 72.7,0 1,-2.1 890.5L-26,500.1A180,180 82.8,0 1,142.7 309.5z" />
+
+        <path
+            android:fillColor="#161B22"
+            android:pathData="M193.4,569.6L862.7,601.2A180,180 48.1,0 1,1034 789.5L1014.1,1211.9A180,180 0,0 1,825.8 1383.2L156.5,1351.6A180,180 53.1,0 1,-14.8 1163.3L5.1,740.9A180,180 97.2,0 1,193.4 569.6z" />
+
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M656.6,424.8L745.4,531.2L926.4,366.5"
+            android:strokeWidth="32"
+            android:strokeColor="#F5F5F5"
+            android:strokeLineCap="round" />
+
+    </group>
+
+</vector>

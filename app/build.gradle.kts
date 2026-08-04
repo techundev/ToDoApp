@@ -73,6 +73,9 @@ dependencies {
     //lottie
     implementation(libs.lottie.compose)
 
+    //splash api
+    implementation(libs.androidx.core.splashscreen)
+
     //testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
