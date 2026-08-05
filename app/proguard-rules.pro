@@ -19,3 +19,32 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keepclasseswithmembers class * {
+    @kotlinx.serialization.Serializable <methods>;
+}
+-keep,includedescriptorclasses class com.techun.dev.todoapp.**$$serializer { *; }
+-keepclassmembers class com.techun.dev.todoapp.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.techun.dev.todoapp.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+-dontwarn org.koin.**
+-keep class org.koin.core.** { *; }
+
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class * { *; }
+-dontwarn androidx.room.paging.**
+
+-keep class com.airbnb.lottie.** { *; }
+-dontwarn com.airbnb.lottie.**
+
+-dontwarn javax.annotation.**
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.Nonnull
+-dontwarn javax.annotation.concurrent.**
