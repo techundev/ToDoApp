@@ -4,8 +4,8 @@
     <item android:drawable="@color/splash_background_color" />
 
     <item
-        android:width="200dp"
-        android:height="200dp"
+        android:width="300dp"
+        android:height="300dp"
         android:drawable="@drawable/icon_todo_app"
         android:gravity="center" />
 </layer-list>

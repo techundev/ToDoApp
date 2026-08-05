@@ -8,8 +8,8 @@
         android:name="todo_app"
         android:pivotX="512"
         android:pivotY="512"
-        android:scaleX="0.3"
-        android:scaleY="0.3">
+        android:scaleX="0.4"
+        android:scaleY="0.4">
 
         <clip-path android:pathData="M224,0L800,0A224,224 0,0 1,1024 224L1024,800A224,224 0,0 1,800 1024L224,1024A224,224 0,0 1,0 800L0,224A224,224 0,0 1,224 0z" />
 

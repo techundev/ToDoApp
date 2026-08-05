@@ -1,6 +1,6 @@
 package com.techun.dev.todoapp.create.data.repository
 
-import com.techun.dev.todoapp.core.database.local.dao.TaskDao
+import com.techun.dev.todoapp.core.database.dao.TaskDao
 import com.techun.dev.todoapp.create.data.mapper.toEntity
 import com.techun.dev.todoapp.create.domain.repository.CreateTaskRepository
 import com.techun.dev.todoapp.home.domain.model.Task

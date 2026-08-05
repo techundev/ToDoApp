@@ -1,7 +1,7 @@
 package com.techun.dev.todoapp.core.di
 
 import androidx.room.Room
-import com.techun.dev.todoapp.core.database.local.database.TaskDatabase
+import com.techun.dev.todoapp.core.database.database.TaskDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
