@@ -58,7 +58,7 @@ fun ToDoTaskItem(
             .fillMaxWidth()
             .alpha(contentAlpha),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -73,7 +73,7 @@ fun ToDoTaskItem(
                 onClick = { onDelete(task) },
                 modifier = Modifier.size(30.dp),
                 colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = Color.LightGray
+                    contentColor = MaterialTheme.colorScheme.outline
                 )
             ) {
                 Icon(

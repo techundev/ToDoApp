@@ -42,6 +42,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CreateTaskScreen(
     viewModel: CreateTaskViewModel = koinViewModel(),
+    onBackToHome: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -50,7 +51,7 @@ fun CreateTaskScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                CreateTaskEvent.TaskCreated -> {}
+                is CreateTaskEvent.TaskCreated -> onBackToHome()
                 is CreateTaskEvent.ShowError -> snackbarHostState.showSnackbar(event.message)
             }
         }

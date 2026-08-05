@@ -1,9 +1,9 @@
-package com.techun.dev.todoapp.core.database.local.dao
+package com.techun.dev.todoapp.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.techun.dev.todoapp.core.database.local.entity.TaskEntity
+import com.techun.dev.todoapp.core.database.entity.TaskEntity
 import com.techun.dev.todoapp.home.domain.model.TaskStatus
 import kotlinx.coroutines.flow.Flow
 

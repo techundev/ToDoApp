@@ -54,7 +54,9 @@ fun NavWrapper() {
                 })
             }
             entry<NavRoutes.Add> {
-                CreateTaskScreen()
+                CreateTaskScreen(onBackToHome = {
+                    backStack.removeLastOrNull()
+                })
             }
         }
     )

@@ -1,4 +1,4 @@
-package com.techun.dev.todoapp.core.database.local.entity
+package com.techun.dev.todoapp.core.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
