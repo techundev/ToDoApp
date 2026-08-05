@@ -193,7 +193,7 @@ implementation("com.airbnb.android:lottie-compose:6.x.x")
 
 ¿Quieres probar la app sin compilar el proyecto? Descarga directamente el APK:
 
-[![Descargar APK](https://img.shields.io/badge/Descargar-APK_v1.0.0-1B6FE0?style=for-the-badge&logo=android&logoColor=white)](https://github.com/techundev/ToDoApp/releases/download/v1.0.0/ToDoApp-v1.0.0.apk)
+[![Descargar APK](https://img.shields.io/badge/Descargar-APK_v1.0.0-1B6FE0?style=for-the-badge&logo=android&logoColor=white)](https://github.com/techundev/ToDoApp/releases/download/v1.0.0/ToDoApp-v1.0.0.aab)
 
 > **Nota:** Es necesario habilitar la instalación de fuentes desconocidas en tu dispositivo Android.
 > `Ajustes → Seguridad → Instalar apps desconocidas`
