@@ -102,24 +102,6 @@ fun HomeScreen(
                     )
                 }
             }
-
-//            when {
-//                (uiState.pending is TaskSectionState.Loading) && (uiState.completed is TaskSectionState.Loading) -> {
-//                    TaskSectionLoading()
-//                }
-//
-//                (uiState.pending is TaskSectionState.Empty) && (uiState.completed is TaskSectionState.Empty) -> {
-//                    TaskSectionEmpty()
-//                }
-//
-//                else -> {
-//                    HomeContent(
-//                        uiState = uiState,
-//                        onDelete = { task -> viewModel.deleteTask(task) },
-//                        onComplete = { task -> viewModel.taskToggleCompleted(task) }
-//                    )
-//                }
-//            }
         }
     }
 }
@@ -165,10 +147,6 @@ private fun LazyListScope.taskSection(
     key: String, state: TaskSectionState, onDelete: (Task) -> Unit, onComplete: (Task) -> Unit
 ) {
     when (state) {
-//        TaskSectionState.Loading -> item(key = "${key}_loading", contentType = "loading") {
-//            TaskSectionLoading()
-//        }
-
         is TaskSectionState.Error -> item(key = "${key}_error", contentType = "error") {
             TaskSectionError(message = state.message)
         }
