@@ -40,8 +40,8 @@ class CreateTaskViewModel(private val addTaskUseCase: AddTaskUseCase) : ViewMode
         priority = PriorityStatus.MEDIUM,
         status = TaskStatus.PENDING,
         date = LocalDate.now(),
-        startTime = LocalTime.of(9, 0),
-        endTime = LocalTime.of(10, 30)
+        startTime = LocalTime.of(13, 0),
+        endTime = LocalTime.of(15, 30)
     )
 
     fun onTitleChanged(newTitle: String) {

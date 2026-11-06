@@ -18,19 +18,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieAnimation
@@ -42,6 +39,7 @@ import com.techun.dev.todoapp.R
 import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.HomeScreenPhase
 import com.techun.dev.todoapp.home.domain.model.Task
+import com.techun.dev.todoapp.home.ui.composable.ToDoDayTimeline
 import com.techun.dev.todoapp.home.ui.composable.ToDoHorizontalCalendar
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
@@ -120,34 +118,37 @@ private fun HomeContent(
     onComplete: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        taskSection(
-            key = "pending", state = uiState.pending, onDelete = onDelete, onComplete = onComplete
-        )
+    ToDoDayTimeline(tasks = (uiState.pending as TaskSectionState.Success).tasks)
 
-        if (uiState.pending !is TaskSectionState.Empty && uiState.completed !is TaskSectionState.Empty) {
 
-            item(
-                key = "divider"
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(Color.LightGray)
-                )
-            }
-        }
-
-        taskSection(
-            key = "completed",
-            state = uiState.completed,
-            onDelete = onDelete,
-            onComplete = onComplete
-        )
-    }
+//    LazyColumn(
+//        modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)
+//    ) {
+//        taskSection(
+//            key = "pending", state = uiState.pending, onDelete = onDelete, onComplete = onComplete
+//        )
+//
+//        if (uiState.pending !is TaskSectionState.Empty && uiState.completed !is TaskSectionState.Empty) {
+//
+//            item(
+//                key = "divider"
+//            ) {
+//                HorizontalDivider(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                        .background(Color.LightGray)
+//                )
+//            }
+//        }
+//
+//        taskSection(
+//            key = "completed",
+//            state = uiState.completed,
+//            onDelete = onDelete,
+//            onComplete = onComplete
+//        )
+//    }
 }
 
 private fun LazyListScope.taskSection(
