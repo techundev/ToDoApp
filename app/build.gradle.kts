@@ -8,12 +8,12 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val localProps = Properties().apply {
-    val localPropsFile = rootProject.file("local.properties")
-    if (localPropsFile.exists()) {
-        load(FileInputStream(localPropsFile))
-    }
-}
+//val localProps = Properties().apply {
+//    val localPropsFile = rootProject.file("local.properties")
+//    if (localPropsFile.exists()) {
+//        load(FileInputStream(localPropsFile))
+//    }
+//}
 
 
 android {
@@ -32,14 +32,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile = file(localProps["RELEASE_STORE_FILE"] as String)
-            storePassword = localProps["RELEASE_STORE_PASSWORD"] as String
-            keyAlias = localProps["RELEASE_KEY_ALIAS"] as String
-            keyPassword = localProps["RELEASE_KEY_PASSWORD"] as String
-        }
-    }
+//    signingConfigs {
+//        create("release") {
+//            storeFile = file(localProps["RELEASE_STORE_FILE"] as String)
+//            storePassword = localProps["RELEASE_STORE_PASSWORD"] as String
+//            keyAlias = localProps["RELEASE_KEY_ALIAS"] as String
+//            keyPassword = localProps["RELEASE_KEY_PASSWORD"] as String
+//        }
+//    }
 
     buildTypes {
         release {
@@ -49,7 +49,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+//            signingConfig = signingConfigs.getByName("release")
         }
 
         debug {
