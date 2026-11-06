@@ -1,5 +1,6 @@
 package com.techun.dev.todoapp.home.ui
 
+import android.util.Log
 import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -17,10 +18,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -40,10 +43,12 @@ import com.techun.dev.todoapp.R
 import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.HomeScreenPhase
 import com.techun.dev.todoapp.home.domain.model.Task
+import com.techun.dev.todoapp.home.ui.composable.ToDoHorizontalCalendar
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(), onCreateNewTask: () -> Unit
@@ -51,19 +56,27 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val currentPhase = when {
-        uiState.pending is TaskSectionState.Loading && uiState.completed is TaskSectionState.Loading ->
-            HomeScreenPhase.Loading
+        uiState.pending is TaskSectionState.Loading && uiState.completed is TaskSectionState.Loading -> HomeScreenPhase.Loading
 
-        uiState.pending is TaskSectionState.Empty && uiState.completed is TaskSectionState.Empty ->
-            HomeScreenPhase.Empty
+        uiState.pending is TaskSectionState.Empty && uiState.completed is TaskSectionState.Empty -> HomeScreenPhase.Empty
 
         else -> HomeScreenPhase.Content
     }
 
-    Scaffold(
-        floatingActionButton = {
-            ToDoTaskFloatingActionButton { onCreateNewTask() }
-        }) { innerPadding ->
+    Scaffold(topBar = {
+        Column(
+            modifier = Modifier.statusBarsPadding()
+        ) {
+            ToDoHorizontalCalendar(
+                modifier = Modifier.fillMaxWidth(),
+                selectedDate = uiState.selectedDate,
+                onDateSelected = { date ->
+//                    viewModel.onDateSelected(date)
+                })
+        }
+    }, floatingActionButton = {
+        ToDoTaskFloatingActionButton { onCreateNewTask() }
+    }) { innerPadding ->
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
@@ -82,15 +95,11 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(35.dp))
 
             AnimatedContent(
-                targetState = currentPhase,
-                transitionSpec = {
+                targetState = currentPhase, transitionSpec = {
                     (fadeIn(animationSpec = tween(300)) + scaleIn(
-                        initialScale = 0.95f,
-                        animationSpec = tween(300)
-                    ))
-                        .togetherWith(fadeOut(animationSpec = tween(150)))
-                },
-                label = "homeScreenPhaseTransition"
+                        initialScale = 0.95f, animationSpec = tween(300)
+                    )).togetherWith(fadeOut(animationSpec = tween(150)))
+                }, label = "homeScreenPhaseTransition"
             ) { phase ->
                 when (phase) {
                     HomeScreenPhase.Loading -> TaskSectionLoading()
@@ -98,8 +107,7 @@ fun HomeScreen(
                     HomeScreenPhase.Content -> HomeContent(
                         uiState = uiState,
                         onDelete = { task -> viewModel.deleteTask(task) },
-                        onComplete = { task -> viewModel.taskToggleCompleted(task) }
-                    )
+                        onComplete = { task -> viewModel.taskToggleCompleted(task) })
                 }
             }
         }
@@ -174,8 +182,7 @@ fun TaskSectionLoading() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .height(120.dp),
-        contentAlignment = Alignment.Center
+            .height(120.dp), contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }
@@ -183,14 +190,12 @@ fun TaskSectionLoading() {
 
 @Composable
 private fun TaskSectionEmpty(
-    modifier: Modifier = Modifier,
-    @RawRes rawRes: Int = R.raw.embty_cart
+    modifier: Modifier = Modifier, @RawRes rawRes: Int = R.raw.embty_cart
 ) {
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(rawRes))
     val progress by animateLottieCompositionAsState(
-        composition = composition,
-        iterations = LottieConstants.IterateForever
+        composition = composition, iterations = LottieConstants.IterateForever
     )
 
     Column(
@@ -199,14 +204,11 @@ private fun TaskSectionEmpty(
         verticalArrangement = Arrangement.Center
     ) {
         LottieAnimation(
-            composition = composition,
-            progress = { progress },
-            modifier = Modifier.size(300.dp)
+            composition = composition, progress = { progress }, modifier = Modifier.size(300.dp)
         )
 
         ToDoText(
-            text = "TODO's you add will appear here",
-            color = MaterialTheme.colorScheme.outline
+            text = "TODO's you add will appear here", color = MaterialTheme.colorScheme.outline
         )
 
         Spacer(

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 
 sealed interface TaskSectionState {
@@ -30,7 +31,8 @@ sealed interface TaskSectionState {
 
 data class HomeUiState(
     val pending: TaskSectionState = TaskSectionState.Loading,
-    val completed: TaskSectionState = TaskSectionState.Loading
+    val completed: TaskSectionState = TaskSectionState.Loading,
+    val selectedDate: LocalDate = LocalDate.now()
 )
 
 class HomeViewModel(
@@ -80,12 +82,10 @@ class HomeViewModel(
         pendingTask.forEach { merged[it.id] = it }
         completedTask.forEach { merged[it.id] = it }
 
-        val resolved = merged.values
-            .filterNot { it.id in deletions }
-            .map { task ->
-                val override = overrides[task.id]
-                if (override != null && override != task.isCompleted) task.copy(isCompleted = override) else task
-            }
+        val resolved = merged.values.filterNot { it.id in deletions }.map { task ->
+            val override = overrides[task.id]
+            if (override != null && override != task.isCompleted) task.copy(isCompleted = override) else task
+        }
 
         val newPending = resolved.filter { !it.isCompleted }
         val newCompleted = resolved.filter { it.isCompleted }
@@ -123,7 +123,6 @@ class HomeViewModel(
             toggleJobs.remove(task.id)
         }
     }
-
 
     fun deleteTask(task: Task) {
         toggleJobs[task.id]?.cancel()
