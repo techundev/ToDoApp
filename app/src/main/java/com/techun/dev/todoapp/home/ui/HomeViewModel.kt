@@ -82,12 +82,10 @@ class HomeViewModel(
         pendingTask.forEach { merged[it.id] = it }
         completedTask.forEach { merged[it.id] = it }
 
-        val resolved = merged.values
-            .filterNot { it.id in deletions }
-            .map { task ->
-                val override = overrides[task.id]
-                if (override != null && override != task.isCompleted) task.copy(isCompleted = override) else task
-            }
+        val resolved = merged.values.filterNot { it.id in deletions }.map { task ->
+            val override = overrides[task.id]
+            if (override != null && override != task.isCompleted) task.copy(isCompleted = override) else task
+        }
 
         val newPending = resolved.filter { !it.isCompleted }
         val newCompleted = resolved.filter { it.isCompleted }
@@ -139,8 +137,6 @@ class HomeViewModel(
             }
         }
     }
-
-
 }
 
 private fun HomeResult.toTaskSectionState() = when (this) {
