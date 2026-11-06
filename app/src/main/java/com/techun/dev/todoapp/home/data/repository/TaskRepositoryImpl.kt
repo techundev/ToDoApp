@@ -1,47 +1,50 @@
 package com.techun.dev.todoapp.home.data.repository
 
 import com.techun.dev.todoapp.core.database.dao.TaskDao
+import com.techun.dev.todoapp.core.database.entity.TaskEntity
 import com.techun.dev.todoapp.home.data.mapper.toDomain
-import com.techun.dev.todoapp.home.domain.model.HomeResult
+import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.domain.model.TaskStatus
 import com.techun.dev.todoapp.home.domain.repository.HomeRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 
 class TaskRepositoryImpl(private val dao: TaskDao) : HomeRepository {
-    override fun getPendingTask(): Flow<HomeResult> = dao.getPendingTasks().map { entities ->
-        val tasks = entities.map { it.toDomain() }
+//    override fun getPendingTask(): Flow<HomeResult> = dao.getPendingTasks().map { entities ->
+//        val tasks = entities.map { it.toDomain() }
+//
+//        if (tasks.isEmpty()) {
+//            HomeResult.Empty
+//        } else {
+//            HomeResult.Success(tasks)
+//        }
+//    }.catch {
+//        emit(HomeResult.Error(it.message ?: "Error desconocido"))
+//    }
+//
+//    override fun getCompletedTask(): Flow<HomeResult> = dao.getCompletedTasks().map { entities ->
+//        val tasks = entities.map { it.toDomain() }
+//
+//        if (tasks.isEmpty()) {
+//            HomeResult.Empty
+//        } else {
+//            HomeResult.Success(tasks)
+//        }
+//    }.catch {
+//        emit(HomeResult.Error(it.message ?: "Error desconocido"))
+//    }
 
-        if (tasks.isEmpty()) {
-            HomeResult.Empty
-        } else {
-            HomeResult.Success(tasks)
-        }
-    }.catch {
-        emit(HomeResult.Error(it.message ?: "Error desconocido"))
-    }
-
-    override fun getCompletedTask(): Flow<HomeResult> = dao.getCompletedTasks().map { entities ->
-        val tasks = entities.map { it.toDomain() }
-
-        if (tasks.isEmpty()) {
-            HomeResult.Empty
-        } else {
-            HomeResult.Success(tasks)
-        }
-    }.catch {
-        emit(HomeResult.Error(it.message ?: "Error desconocido"))
-    }
+    override fun observeTasksByDate(day: LocalDate): Flow<List<Task>> =
+        dao.observeByDate(day.toEpochDay()).map { list -> list.map(TaskEntity::toDomain) }
 
     override suspend fun updateTaskCompletion(
         taskId: Long, isCompleted: Boolean
     ): Result<Unit> = runCatching {
         val now = System.currentTimeMillis()
-        val rowsAffected = dao.updateCompletion(
+        val rowsAffected = dao.updateStatus(
             id = taskId,
             status = if (isCompleted) TaskStatus.COMPLETED else TaskStatus.PENDING,
-            isCompleted = isCompleted,
             completedAt = if (isCompleted) now else null,
             updatedAt = now
         )

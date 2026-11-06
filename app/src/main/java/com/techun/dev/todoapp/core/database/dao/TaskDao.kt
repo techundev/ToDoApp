@@ -9,45 +9,79 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
-    @Query(
-        """
-        SELECT * FROM task 
-        WHERE status= 'PENDING' 
-        ORDER BY created_at DESC"""
-    )
-    fun getPendingTasks(): Flow<List<TaskEntity>>
 
     @Query(
         """
-        SELECT * FROM task 
-        WHERE status= 'COMPLETED' 
-        ORDER BY created_at DESC"""
+        SELECT * FROM task
+        WHERE task_date = :epochDay
+        ORDER BY start_minute IS NULL, start_minute ASC, created_at DESC
+    """
     )
-    fun getCompletedTasks(): Flow<List<TaskEntity>>
+    fun observeByDate(epochDay: Long): Flow<List<TaskEntity>>
 
-    @Query("SELECT COUNT(*) FROM task")
-    suspend fun count(): Int
+    // Opcional: marcar en el calendario los días que tienen tareas
+    @Query(
+        """
+        SELECT DISTINCT task_date FROM task
+        WHERE task_date BETWEEN :fromEpochDay AND :toEpochDay
+    """
+    )
+    fun observeDatesWithTasks(fromEpochDay: Long, toEpochDay: Long): Flow<List<Long>>
 
     @Insert
-    suspend fun insertAll(tasks: List<TaskEntity>)
-
-    @Insert
-    suspend fun insertTask(tasks: TaskEntity): Long
+    suspend fun insert(task: TaskEntity): Long
 
     @Query(
         """
         UPDATE task
-        SET status = :status,
-            is_completed = :isCompleted,
-            completed_at = :completedAt,
-            updated_at = :updatedAt
+        SET status = :status, completed_at = :completedAt, updated_at = :updatedAt
         WHERE id = :id
-        """
+    """
     )
-    suspend fun updateCompletion(
-        id: Long, status: TaskStatus, isCompleted: Boolean, completedAt: Long?, updatedAt: Long
-    ): Int
+    suspend fun updateStatus(id: Long, status: TaskStatus, completedAt: Long?, updatedAt: Long): Int
 
     @Query("DELETE FROM task WHERE id = :id")
     suspend fun deleteById(id: Long): Int
+
+//    @Query(
+//        """
+//        SELECT * FROM task
+//        WHERE status= 'PENDING'
+//        ORDER BY created_at DESC"""
+//    )
+//    fun getPendingTasks(): Flow<List<TaskEntity>>
+//
+//    @Query(
+//        """
+//        SELECT * FROM task
+//        WHERE status= 'COMPLETED'
+//        ORDER BY created_at DESC"""
+//    )
+//    fun getCompletedTasks(): Flow<List<TaskEntity>>
+//
+//    @Query("SELECT COUNT(*) FROM task")
+//    suspend fun count(): Int
+//
+//    @Insert
+//    suspend fun insertAll(tasks: List<TaskEntity>)
+//
+//    @Insert
+//    suspend fun insertTask(tasks: TaskEntity): Long
+
+//    @Query(
+//        """
+//        UPDATE task
+//        SET status = :status,
+//            is_completed = :isCompleted,
+//            completed_at = :completedAt,
+//            updated_at = :updatedAt
+//        WHERE id = :id
+//        """
+//    )
+//    suspend fun updateCompletion(
+//        id: Long, status: TaskStatus, isCompleted: Boolean, completedAt: Long?, updatedAt: Long
+//    ): Int
+
+//    @Query("DELETE FROM task WHERE id = :id")
+//    suspend fun deleteById(id: Long): Int
 }

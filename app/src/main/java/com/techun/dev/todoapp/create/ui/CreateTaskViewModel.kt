@@ -53,37 +53,37 @@ class CreateTaskViewModel(private val addTaskUseCase: AddTaskUseCase) : ViewMode
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val task = Task(
-                id = 0L,
-                title = current.title,
-                priority = current.priority.toPriorityStatus(),
-                status = TaskStatus.PENDING,
-                createdAt = "",
-                updatedAt = "",
-                completedAt = null,
-                deletedAt = null,
-                isCompleted = false
-            )
-
-            addTaskUseCase(task).onSuccess {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false, title = "", priority = 0f
-                    )
-                }
-                _events.emit(CreateTaskEvent.TaskCreated)
-            }.onFailure { throwable ->
-                _uiState.update {
-                    it.copy(
-                        isLoading = false
-                    )
-                }
-                _events.emit(
-                    CreateTaskEvent.ShowError(
-                        throwable.message ?: "Error al guardar la tarea"
-                    )
-                )
-            }
+//            val task = Task(
+//                id = 0L,
+//                title = current.title,
+//                priority = current.priority.toPriorityStatus(),
+//                status = TaskStatus.PENDING,
+//                createdAt = "",
+//                updatedAt = "",
+//                completedAt = null,
+//                deletedAt = null,
+//                isCompleted = false
+//            )
+//
+//            addTaskUseCase(task).onSuccess {
+//                _uiState.update {
+//                    it.copy(
+//                        isLoading = false, title = "", priority = 0f
+//                    )
+//                }
+//                _events.emit(CreateTaskEvent.TaskCreated)
+//            }.onFailure { throwable ->
+//                _uiState.update {
+//                    it.copy(
+//                        isLoading = false
+//                    )
+//                }
+//                _events.emit(
+//                    CreateTaskEvent.ShowError(
+//                        throwable.message ?: "Error al guardar la tarea"
+//                    )
+//                )
+//            }
         }
     }
 }

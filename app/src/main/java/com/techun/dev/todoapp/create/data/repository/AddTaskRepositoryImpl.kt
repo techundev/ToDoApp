@@ -7,7 +7,7 @@ import com.techun.dev.todoapp.home.domain.model.Task
 
 class AddTaskRepositoryImpl(private val dao: TaskDao) : CreateTaskRepository {
     override suspend fun addTask(task: Task): Result<Unit> = runCatching {
-        val rowId = dao.insertTask(task.toEntity())
+        val rowId = dao.insert(task.toEntity())
         check(rowId != -1L) { "Insert falló: conflicto o restricción violada" }
     }
 }
