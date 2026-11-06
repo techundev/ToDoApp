@@ -37,7 +37,6 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.techun.dev.todoapp.R
 import com.techun.dev.todoapp.core.composables.ToDoText
-import com.techun.dev.todoapp.home.domain.model.HomeScreenPhase
 import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.ui.composable.ToDoDayTimeline
 import com.techun.dev.todoapp.home.ui.composable.ToDoHorizontalCalendar
@@ -51,14 +50,6 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(), onCreateNewTask: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val currentPhase = when {
-        uiState.pending is TaskSectionState.Loading && uiState.completed is TaskSectionState.Loading -> HomeScreenPhase.Loading
-
-        uiState.pending is TaskSectionState.Empty && uiState.completed is TaskSectionState.Empty -> HomeScreenPhase.Empty
-
-        else -> HomeScreenPhase.Content
-    }
 
     Scaffold(topBar = {
         Column(
@@ -81,30 +72,23 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
 
-//            Spacer(modifier = Modifier.height(35.dp))
-//
-//            ToDoText(
-//                modifier = Modifier.padding(horizontal = 16.dp),
-//                text = "ToDo",
-//                style = MaterialTheme.typography.displayLarge
-//            )
-
-            Spacer(modifier = Modifier.height(35.dp))
-
             AnimatedContent(
-                targetState = currentPhase, transitionSpec = {
+                targetState = uiState.tasks, transitionSpec = {
                     (fadeIn(animationSpec = tween(300)) + scaleIn(
                         initialScale = 0.95f, animationSpec = tween(300)
                     )).togetherWith(fadeOut(animationSpec = tween(150)))
                 }, label = "homeScreenPhaseTransition"
-            ) { phase ->
-                when (phase) {
-                    HomeScreenPhase.Loading -> TaskSectionLoading()
-                    HomeScreenPhase.Empty -> TaskSectionEmpty()
-                    HomeScreenPhase.Content -> HomeContent(
-                        uiState = uiState,
-                        onDelete = { task -> viewModel.deleteTask(task) },
-                        onComplete = { task -> viewModel.taskToggleCompleted(task) })
+            ) { taskState ->
+                when (taskState) {
+                    is TaskSectionState.Empty -> TaskSectionEmpty()
+                    is TaskSectionState.Error -> {}
+                    is TaskSectionState.Loading -> TaskSectionLoading()
+                    is TaskSectionState.Success -> {
+                        HomeContent(
+                            tasks = taskState.tasks,
+                            onDelete = { task -> viewModel.deleteTask(task) },
+                            onComplete = { task -> viewModel.taskToggleCompleted(task) })
+                    }
                 }
             }
         }
@@ -113,12 +97,14 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
-    uiState: HomeUiState,
+    tasks: List<Task>,
     onDelete: (Task) -> Unit,
     onComplete: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ToDoDayTimeline(tasks = (uiState.pending as TaskSectionState.Success).tasks)
+    ToDoDayTimeline(
+        modifier = Modifier.padding(top = 15.dp), tasks = tasks
+    )
 
 
 //    LazyColumn(

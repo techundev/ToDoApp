@@ -5,7 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -46,6 +48,7 @@ fun ToDoHorizontalCalendar(
     )
 
     Column {
+        Spacer(modifier = Modifier.height(10.dp))
         ToDoText(
             text = selectedDate.format(
                 DateTimeFormatter.ofPattern(
@@ -95,11 +98,11 @@ fun CalendarDayItem(
 
     Column(
         modifier = Modifier
-            .width(60.dp)
+            .width(70.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(background)
             .clickable(onClick = onClick)
-            .padding(vertical = 10.dp),
+            .padding(vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
