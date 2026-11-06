@@ -2,9 +2,9 @@ package com.techun.dev.todoapp.create.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.techun.dev.todoapp.create.domain.model.NewTask
 import com.techun.dev.todoapp.create.domain.usecase.AddTaskUseCase
 import com.techun.dev.todoapp.home.domain.model.PriorityStatus
-import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.domain.model.TaskStatus
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 import kotlin.math.roundToInt
 
 data class CreateTaskUiState(
@@ -32,6 +34,16 @@ class CreateTaskViewModel(private val addTaskUseCase: AddTaskUseCase) : ViewMode
     private val _events = MutableSharedFlow<CreateTaskEvent>()
     val events: SharedFlow<CreateTaskEvent> = _events.asSharedFlow()
 
+
+    private fun mockTask() = NewTask(
+        title = "Tarea de prueba",
+        priority = PriorityStatus.MEDIUM,
+        status = TaskStatus.PENDING,
+        date = LocalDate.now(),
+        startTime = LocalTime.of(9, 0),
+        endTime = LocalTime.of(10, 30)
+    )
+
     fun onTitleChanged(newTitle: String) {
         _uiState.update { it.copy(title = newTitle) }
     }
@@ -41,31 +53,30 @@ class CreateTaskViewModel(private val addTaskUseCase: AddTaskUseCase) : ViewMode
     }
 
     fun onDoneClicked() {
-        val current = _uiState.value
-
-        if (current.title.isBlank()) {
-            viewModelScope.launch {
-                _events.emit(CreateTaskEvent.ShowError("El título es obligatorio"))
-            }
-            return
-        }
+//        val current = _uiState.value
+//
+//        if (current.title.isBlank()) {
+//            viewModelScope.launch {
+//                _events.emit(CreateTaskEvent.ShowError("El título es obligatorio"))
+//            }
+//            return
+//        }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val task = Task(
-                id = 0L,
-                title = current.title,
-                priority = current.priority.toPriorityStatus(),
-                status = TaskStatus.PENDING,
-                createdAt = "",
-                updatedAt = "",
-                completedAt = null,
-                deletedAt = null,
-                isCompleted = false
-            )
+//            val task = Task(
+//                id = 0L,
+//                title = current.title,
+//                priority = current.priority.toPriorityStatus(),
+//                status = TaskStatus.PENDING,
+//                createdAt = "",
+//                updatedAt = "",
+//                completedAt = null,
+//                deletedAt = null,
+//            )
 
-            addTaskUseCase(task).onSuccess {
+            addTaskUseCase(mockTask()).onSuccess {
                 _uiState.update {
                     it.copy(
                         isLoading = false, title = "", priority = 0f

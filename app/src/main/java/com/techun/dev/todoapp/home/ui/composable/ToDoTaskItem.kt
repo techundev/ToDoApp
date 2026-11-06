@@ -18,33 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.techun.dev.todoapp.core.composables.ToDoText
-import com.techun.dev.todoapp.home.domain.model.PriorityStatus
 import com.techun.dev.todoapp.home.domain.model.Task
-import com.techun.dev.todoapp.home.domain.model.TaskStatus
-
-
-@Preview(showBackground = true)
-@Composable
-fun ToDoTaskItemPreview() {
-    val task = Task(
-        id = 0,
-        title = "Read a book",
-        priority = PriorityStatus.HIGH,
-        status = TaskStatus.PENDING,
-        createdAt = "7/28/2026",
-        updatedAt = "7/28/2026",
-        completedAt = null,
-        deletedAt = null,
-        isCompleted = false
-    )
-
-    ToDoTaskItem(task = task, onDelete = {}, onComplete = {})
-}
 
 @Composable
 fun ToDoTaskItem(

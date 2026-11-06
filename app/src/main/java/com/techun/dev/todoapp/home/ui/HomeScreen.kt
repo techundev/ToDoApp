@@ -1,6 +1,5 @@
 package com.techun.dev.todoapp.home.ui
 
-import android.util.Log
 import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -71,7 +70,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 selectedDate = uiState.selectedDate,
                 onDateSelected = { date ->
-//                    viewModel.onDateSelected(date)
+                    viewModel.onDateSelected(date)
                 })
         }
     }, floatingActionButton = {
@@ -84,13 +83,13 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
 
-            Spacer(modifier = Modifier.height(35.dp))
-
-            ToDoText(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = "ToDo",
-                style = MaterialTheme.typography.displayLarge
-            )
+//            Spacer(modifier = Modifier.height(35.dp))
+//
+//            ToDoText(
+//                modifier = Modifier.padding(horizontal = 16.dp),
+//                text = "ToDo",
+//                style = MaterialTheme.typography.displayLarge
+//            )
 
             Spacer(modifier = Modifier.height(35.dp))
 
