@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 
 sealed interface TaskSectionState {
@@ -30,7 +31,8 @@ sealed interface TaskSectionState {
 
 data class HomeUiState(
     val pending: TaskSectionState = TaskSectionState.Loading,
-    val completed: TaskSectionState = TaskSectionState.Loading
+    val completed: TaskSectionState = TaskSectionState.Loading,
+    val selectedDate: LocalDate = LocalDate.now()
 )
 
 class HomeViewModel(
@@ -124,7 +126,6 @@ class HomeViewModel(
         }
     }
 
-
     fun deleteTask(task: Task) {
         toggleJobs[task.id]?.cancel()
         toggleJobs.remove(task.id)
@@ -138,6 +139,8 @@ class HomeViewModel(
             }
         }
     }
+
+
 }
 
 private fun HomeResult.toTaskSectionState() = when (this) {

@@ -1,6 +1,9 @@
 package com.techun.dev.todoapp.home.ui
 
+import android.os.Build
+import android.util.Log
 import androidx.annotation.RawRes
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -40,10 +43,12 @@ import com.techun.dev.todoapp.R
 import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.HomeScreenPhase
 import com.techun.dev.todoapp.home.domain.model.Task
+import com.techun.dev.todoapp.home.ui.composable.ToDoHorizontalCalendar
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
 import org.koin.compose.viewmodel.koinViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(), onCreateNewTask: () -> Unit
@@ -70,6 +75,12 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            ToDoHorizontalCalendar(
+                selectedDate = uiState.selectedDate,
+                onDateSelected = { date ->
+                    Log.d("AppDemo", "HomeScreen: $date")
+                }
+            )
 
             Spacer(modifier = Modifier.height(35.dp))
 
