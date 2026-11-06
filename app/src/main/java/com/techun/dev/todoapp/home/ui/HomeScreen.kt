@@ -83,13 +83,13 @@ fun HomeScreen(
                 .padding(innerPadding)
         ) {
 
-            Spacer(modifier = Modifier.height(35.dp))
-
-            ToDoText(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = "ToDo",
-                style = MaterialTheme.typography.displayLarge
-            )
+//            Spacer(modifier = Modifier.height(35.dp))
+//
+//            ToDoText(
+//                modifier = Modifier.padding(horizontal = 16.dp),
+//                text = "ToDo",
+//                style = MaterialTheme.typography.displayLarge
+//            )
 
             Spacer(modifier = Modifier.height(35.dp))
 
