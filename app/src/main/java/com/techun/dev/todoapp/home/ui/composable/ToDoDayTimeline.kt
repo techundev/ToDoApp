@@ -11,14 +11,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.techun.dev.todoapp.core.composables.ToDoText
@@ -43,13 +49,13 @@ fun ToDoDayTimeline(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(timelineHeight),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
 
                 // Columna de horas
                 Box(
                     modifier = Modifier
-                        .width(52.dp)
+                        .width(58.dp)
                         .padding(start = 16.dp)
                         .fillMaxHeight()
                 ) {
@@ -64,6 +70,7 @@ fun ToDoDayTimeline(
                             modifier = Modifier.offset(
                                 y = hourHeight * hour
                             ),
+
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -82,8 +89,7 @@ fun ToDoDayTimeline(
                         HorizontalDivider(
                             modifier = Modifier.offset(
                                 y = hourHeight * hour
-                            ),
-                            color = MaterialTheme.colorScheme.outlineVariant
+                            ), color = MaterialTheme.colorScheme.outlineVariant
                         )
                     }
 
@@ -100,25 +106,20 @@ fun ToDoDayTimeline(
 
                         // Limitar las tareas al rango visible
                         val visibleStart = maxOf(
-                            startMinutes,
-                            startHour * 60
+                            startMinutes, startHour * 60
                         )
 
                         val visibleEnd = minOf(
-                            endMinutes,
-                            endHour * 60
+                            endMinutes, endHour * 60
                         )
 
                         if (visibleEnd <= visibleStart) return@forEach
 
-                        val topOffset =
-                            hourHeight * ((visibleStart - startHour * 60) / 60f)
+                        val topOffset = hourHeight * ((visibleStart - startHour * 60) / 60f)
 
                         val duration = visibleEnd - visibleStart
 
-                        val cardHeight = (
-                                hourHeight * (duration / 60f)
-                                ).coerceAtLeast(44.dp)
+                        val cardHeight = (hourHeight * (duration / 60f)).coerceAtLeast(44.dp)
 
                         Box(
                             modifier = Modifier
@@ -128,8 +129,7 @@ fun ToDoDayTimeline(
                                 .height(cardHeight)
                         ) {
                             TaskTimelineCard(
-                                task = task,
-                                modifier = Modifier.fillMaxSize()
+                                task = task, modifier = Modifier.fillMaxSize()
                             )
                         }
                     }
@@ -146,26 +146,53 @@ fun TaskTimelineCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(30.dp),
+        shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.primaryContainer
     ) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 24.dp, vertical = 18.dp)
         ) {
+            // Título de la task
             ToDoText(
                 text = task.title,
-                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 maxLines = 2
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            // Empuja el divisor y el footer hacia el bottom
+            Spacer(modifier = Modifier.weight(1f))
 
-            ToDoText(
-                text = "${task.startTime} - ${task.endTime}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.10f),
+                thickness = 1.dp
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Footer de la task
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.AccessTime,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(19.dp)
+                )
+
+                ToDoText(
+                    text = "${task.startTime} - ${task.endTime}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }

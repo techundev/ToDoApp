@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +39,6 @@ import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.ui.composable.ToDoDayTimeline
 import com.techun.dev.todoapp.home.ui.composable.ToDoHorizontalCalendar
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
-import com.techun.dev.todoapp.home.ui.composable.ToDoTaskItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,62 +102,6 @@ private fun HomeContent(
     ToDoDayTimeline(
         modifier = Modifier.padding(top = 15.dp), tasks = tasks
     )
-
-
-//    LazyColumn(
-//        modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)
-//    ) {
-//        taskSection(
-//            key = "pending", state = uiState.pending, onDelete = onDelete, onComplete = onComplete
-//        )
-//
-//        if (uiState.pending !is TaskSectionState.Empty && uiState.completed !is TaskSectionState.Empty) {
-//
-//            item(
-//                key = "divider"
-//            ) {
-//                HorizontalDivider(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp)
-//                        .background(Color.LightGray)
-//                )
-//            }
-//        }
-//
-//        taskSection(
-//            key = "completed",
-//            state = uiState.completed,
-//            onDelete = onDelete,
-//            onComplete = onComplete
-//        )
-//    }
-}
-
-private fun LazyListScope.taskSection(
-    key: String, state: TaskSectionState, onDelete: (Task) -> Unit, onComplete: (Task) -> Unit
-) {
-    when (state) {
-        is TaskSectionState.Error -> item(key = "${key}_error", contentType = "error") {
-            TaskSectionError(message = state.message)
-        }
-
-        is TaskSectionState.Success -> items(
-            items = state.tasks,
-            key = { "${key}_${it.id}" },
-            contentType = { "task" }) { task ->
-            ToDoTaskItem(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .animateItem(),
-                task = task,
-                onDelete = onDelete,
-                onComplete = onComplete
-            )
-        }
-
-        else -> Unit
-    }
 }
 
 @Composable
@@ -203,13 +144,4 @@ private fun TaskSectionEmpty(
                 .height(60.dp)
         )
     }
-}
-
-@Composable
-private fun TaskSectionError(message: String) {
-    ToDoText(
-        text = message,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.error
-    )
 }
