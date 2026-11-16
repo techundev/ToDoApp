@@ -100,7 +100,7 @@ private fun HomeContent(
     modifier: Modifier = Modifier
 ) {
     ToDoDayTimeline(
-        modifier = Modifier.padding(top = 15.dp), tasks = tasks
+        modifier = Modifier.padding(top = 15.dp, start = 16.dp), tasks = tasks
     )
 }
 

@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
@@ -22,8 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,23 +42,66 @@ fun ToDoDayTimeline(
 ) {
     val totalHours = endHour - startHour
     val timelineHeight = hourHeight * totalHours
+    val listState = rememberLazyListState()
+    val density = LocalDensity.current
+
+    LaunchedEffect(tasks, startHour, endHour, hourHeight) {
+
+        val firstTask = tasks
+            .filter { task ->
+                val start = task.startTime
+                val end = task.endTime
+
+                start != null &&
+                        end != null &&
+                        end > start
+            }
+            .filter { task ->
+                val startMinutes = task.startTime!!.toSecondOfDay() / 60
+                val endMinutes = task.endTime!!.toSecondOfDay() / 60
+
+                startMinutes < endHour * 60 &&
+                        endMinutes > startHour * 60
+            }
+            .minByOrNull { it.startTime!! }
+
+        if (firstTask != null) {
+            val startMinutes = firstTask.startTime!!.toSecondOfDay() / 60
+
+            val visibleStart = maxOf(
+                startMinutes,
+                startHour * 60
+            )
+
+            val topOffset = hourHeight *
+                    ((visibleStart - startHour * 60) / 60f)
+
+            val scrollOffset = with(density) {
+                topOffset.roundToPx()
+            }
+
+            listState.animateScrollToItem(
+                index = 0,
+                scrollOffset = scrollOffset
+            )
+        }
+    }
 
     LazyColumn(
+        state = listState,
         modifier = modifier.fillMaxSize()
     ) {
         item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(timelineHeight),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
+                    .height(timelineHeight)
             ) {
 
                 // Columna de horas
                 Box(
                     modifier = Modifier
-                        .width(58.dp)
-                        .padding(start = 16.dp)
+                        .weight(0.15f)
                         .fillMaxHeight()
                 ) {
                     for (hour in 0 until totalHours) {
@@ -67,12 +112,13 @@ fun ToDoDayTimeline(
                                 12 -> "12 PM"
                                 else -> "${h - 12} PM"
                             },
-                            modifier = Modifier.offset(
-                                y = hourHeight * hour
-                            ),
+                            modifier = Modifier
+                                .offset(
+                                    y = hourHeight * hour
+                                ),
 
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                         )
                     }
                 }
@@ -80,7 +126,7 @@ fun ToDoDayTimeline(
                 // Área de tareas
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(0.85f)
                         .height(timelineHeight)
                 ) {
 
