@@ -77,7 +77,13 @@ fun HomeScreen(
                 }, label = "homeScreenPhaseTransition"
             ) { taskState ->
                 when (taskState) {
-                    is TaskSectionState.Empty -> TaskSectionEmpty()
+                    is TaskSectionState.Empty -> {
+//                        TaskSectionEmpty()
+                        HomeContent(
+                            onDelete = { task -> viewModel.deleteTask(task) },
+                            onComplete = { task -> viewModel.taskToggleCompleted(task) })
+                    }
+
                     is TaskSectionState.Error -> {}
                     is TaskSectionState.Loading -> TaskSectionLoading()
                     is TaskSectionState.Success -> {
@@ -94,7 +100,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
-    tasks: List<Task>,
+    tasks: List<Task>? = emptyList(),
     onDelete: (Task) -> Unit,
     onComplete: (Task) -> Unit,
     modifier: Modifier = Modifier

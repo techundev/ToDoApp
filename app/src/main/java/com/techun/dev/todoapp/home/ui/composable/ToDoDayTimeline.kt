@@ -34,8 +34,8 @@ import com.techun.dev.todoapp.home.domain.model.Task
 
 @Composable
 fun ToDoDayTimeline(
-    tasks: List<Task>,
     modifier: Modifier = Modifier,
+    tasks: List<Task>? = emptyList(),
     startHour: Int = 0,
     endHour: Int = 24,
     hourHeight: Dp = 72.dp
@@ -48,7 +48,7 @@ fun ToDoDayTimeline(
     LaunchedEffect(tasks, startHour, endHour, hourHeight) {
 
         val firstTask = tasks
-            .filter { task ->
+            ?.filter { task ->
                 val start = task.startTime
                 val end = task.endTime
 
@@ -56,14 +56,14 @@ fun ToDoDayTimeline(
                         end != null &&
                         end > start
             }
-            .filter { task ->
+            ?.filter { task ->
                 val startMinutes = task.startTime!!.toSecondOfDay() / 60
                 val endMinutes = task.endTime!!.toSecondOfDay() / 60
 
                 startMinutes < endHour * 60 &&
                         endMinutes > startHour * 60
             }
-            .minByOrNull { it.startTime!! }
+            ?.minByOrNull { it.startTime!! }
 
         if (firstTask != null) {
             val startMinutes = firstTask.startTime!!.toSecondOfDay() / 60
@@ -140,7 +140,7 @@ fun ToDoDayTimeline(
                     }
 
                     // Tareas posicionadas según su horario
-                    tasks.forEach { task ->
+                    tasks?.forEach { task ->
 
                         val start = task.startTime ?: return@forEach
                         val end = task.endTime ?: return@forEach
