@@ -1,6 +1,5 @@
 package com.techun.dev.todoapp.home.ui
 
-import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -8,18 +7,14 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -28,20 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
-import com.techun.dev.todoapp.R
-import com.techun.dev.todoapp.core.composables.ToDoText
 import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.ui.composable.ToDoDayTimeline
 import com.techun.dev.todoapp.home.ui.composable.ToDoHorizontalCalendar
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(), onCreateNewTask: () -> Unit
@@ -78,7 +65,6 @@ fun HomeScreen(
             ) { taskState ->
                 when (taskState) {
                     is TaskSectionState.Empty -> {
-//                        TaskSectionEmpty()
                         HomeContent(
                             onDelete = { task -> viewModel.deleteTask(task) },
                             onComplete = { task -> viewModel.taskToggleCompleted(task) })
@@ -101,9 +87,8 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     tasks: List<Task>? = emptyList(),
-    onDelete: (Task) -> Unit,
-    onComplete: (Task) -> Unit,
-    modifier: Modifier = Modifier
+    onDelete: (Task) -> Unit, //pendiente de implementar
+    onComplete: (Task) -> Unit //pendiente de implementar
 ) {
     ToDoDayTimeline(
         modifier = Modifier.padding(top = 15.dp, start = 16.dp), tasks = tasks
@@ -121,33 +106,3 @@ fun TaskSectionLoading() {
     }
 }
 
-@Composable
-private fun TaskSectionEmpty(
-    modifier: Modifier = Modifier, @RawRes rawRes: Int = R.raw.embty_cart
-) {
-
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(rawRes))
-    val progress by animateLottieCompositionAsState(
-        composition = composition, iterations = LottieConstants.IterateForever
-    )
-
-    Column(
-        modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        LottieAnimation(
-            composition = composition, progress = { progress }, modifier = Modifier.size(300.dp)
-        )
-
-        ToDoText(
-            text = "TODO's you add will appear here", color = MaterialTheme.colorScheme.outline
-        )
-
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-        )
-    }
-}
