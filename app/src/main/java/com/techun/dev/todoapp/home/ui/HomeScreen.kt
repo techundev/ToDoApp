@@ -19,6 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,6 +30,8 @@ import com.techun.dev.todoapp.home.domain.model.Task
 import com.techun.dev.todoapp.home.ui.composable.ToDoDayTimeline
 import com.techun.dev.todoapp.home.ui.composable.ToDoHorizontalCalendar
 import com.techun.dev.todoapp.home.ui.composable.ToDoTaskFloatingActionButton
+import com.techun.dev.todoapp.home.ui.dialog.DeleteTaskDialog
+import com.techun.dev.todoapp.home.ui.dialog.TaskDetailDialog
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -86,13 +91,33 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
-    tasks: List<Task>? = emptyList(),
-    onDelete: (Task) -> Unit, //pendiente de implementar
+    tasks: List<Task>? = emptyList(), onDelete: (Task) -> Unit, //pendiente de implementar
     onComplete: (Task) -> Unit //pendiente de implementar
 ) {
+    var detailTaskId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var deleteTaskId by rememberSaveable { mutableStateOf<Long?>(null) }
+
+    val detailTask = tasks?.find { it.id == detailTaskId }
+    val deleteTask = tasks?.find { it.id == deleteTaskId }
+
+
     ToDoDayTimeline(
-        modifier = Modifier.padding(top = 15.dp, start = 16.dp), tasks = tasks
-    )
+        modifier = Modifier.padding(top = 15.dp, start = 16.dp),
+        tasks = tasks,
+        onTaskClick = { detailTaskId = it.id },
+        onTaskLongClick = { deleteTaskId = it.id })
+
+    detailTask?.let { task ->
+        TaskDetailDialog(
+            task = task, onDismiss = { detailTaskId = null })
+    }
+
+    deleteTask?.let { task ->
+        DeleteTaskDialog(task = task, onConfirm = {
+            //onDeleteTask(task)
+            deleteTaskId = null
+        }, onDismiss = { deleteTaskId = null })
+    }
 }
 
 @Composable

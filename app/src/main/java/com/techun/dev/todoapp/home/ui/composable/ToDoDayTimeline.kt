@@ -1,5 +1,6 @@
 package com.techun.dev.todoapp.home.ui.composable
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -28,8 +29,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -124,7 +128,9 @@ fun ToDoDayTimeline(
     tasks: List<Task>? = emptyList(),
     startHour: Int = 0,
     endHour: Int = 24,
-    hourHeight: Dp = 72.dp
+    hourHeight: Dp = 72.dp,
+    onTaskClick: (Task) -> Unit = {},
+    onTaskLongClick: (Task) -> Unit = {}
 ) {
     val totalHours = endHour - startHour
     val timelineHeight = hourHeight * totalHours
@@ -217,69 +223,13 @@ fun ToDoDayTimeline(
                                 containerColor = container,
                                 contentColor = content,
                                 compact = item.columns > 1,
+                                onClick = { onTaskClick(item.task) },
+                                onLongClick = { onTaskLongClick(item.task) },
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
                     }
                 }
-
-                // Área de tareas
-//                Box(
-//                    modifier = Modifier
-//                        .weight(0.85f)
-//                        .height(timelineHeight)
-//                ) {
-//
-//                    // Líneas horizontales de cada hora
-//                    for (hour in 0..totalHours) {
-//                        HorizontalDivider(
-//                            modifier = Modifier.offset(
-//                                y = hourHeight * hour
-//                            ), color = MaterialTheme.colorScheme.outlineVariant
-//                        )
-//                    }
-//
-//                    // Tareas posicionadas según su horario
-//                    tasks?.forEach { task ->
-//
-//                        val start = task.startTime ?: return@forEach
-//                        val end = task.endTime ?: return@forEach
-//
-//                        val startMinutes = start.toSecondOfDay() / 60
-//                        val endMinutes = end.toSecondOfDay() / 60
-//
-//                        if (endMinutes <= startMinutes) return@forEach
-//
-//                        // Limitar las tareas al rango visible
-//                        val visibleStart = maxOf(
-//                            startMinutes, startHour * 60
-//                        )
-//
-//                        val visibleEnd = minOf(
-//                            endMinutes, endHour * 60
-//                        )
-//
-//                        if (visibleEnd <= visibleStart) return@forEach
-//
-//                        val topOffset = hourHeight * ((visibleStart - startHour * 60) / 60f)
-//
-//                        val duration = visibleEnd - visibleStart
-//
-//                        val cardHeight = (hourHeight * (duration / 60f)).coerceAtLeast(44.dp)
-//
-//                        Box(
-//                            modifier = Modifier
-//                                .offset(y = topOffset)
-//                                .fillMaxWidth()
-//                                .padding(start = 10.dp, end = 20.dp, top = 5.dp)
-//                                .height(cardHeight)
-//                        ) {
-//                            TaskTimelineCard(
-//                                task = task, modifier = Modifier.fillMaxSize()
-//                            )
-//                        }
-//                    }
-//                }
             }
         }
     }
@@ -290,12 +240,29 @@ fun TaskTimelineCard(
     task: Task,
     containerColor: Color,
     contentColor: Color,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false
 ) {
+    val haptic = LocalHapticFeedback.current
+    val shape = RoundedCornerShape(if (compact) 16.dp else 28.dp)
+
     Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(if (compact) 16.dp else 28.dp),
+        modifier = modifier
+            .clip(shape)
+            .combinedClickable(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onClick()
+                },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongClick()
+                },
+                onLongClickLabel = "Eliminar tarea"
+            ),
+        shape = shape,
         color = containerColor
     ) {
         Column(
