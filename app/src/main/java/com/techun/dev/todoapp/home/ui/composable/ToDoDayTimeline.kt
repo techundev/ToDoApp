@@ -187,6 +187,7 @@ fun ToDoDayTimeline(
                     modifier = Modifier
                         .weight(0.85f)
                         .height(timelineHeight)
+                        .animateItem()
                 ) {
                     val availableWidth = maxWidth - CardStartPadding - CardEndPadding
 

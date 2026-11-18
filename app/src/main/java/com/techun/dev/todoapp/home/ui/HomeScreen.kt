@@ -71,7 +71,7 @@ fun HomeScreen(
                 when (taskState) {
                     is TaskSectionState.Empty -> {
                         HomeContent(
-                            onDelete = { task -> viewModel.deleteTask(task) },
+                            onDeleteTask = { task -> viewModel.deleteTask(task) },
                             onComplete = { task -> viewModel.taskToggleCompleted(task) })
                     }
 
@@ -80,7 +80,7 @@ fun HomeScreen(
                     is TaskSectionState.Success -> {
                         HomeContent(
                             tasks = taskState.tasks,
-                            onDelete = { task -> viewModel.deleteTask(task) },
+                            onDeleteTask = { task -> viewModel.deleteTask(task) },
                             onComplete = { task -> viewModel.taskToggleCompleted(task) })
                     }
                 }
@@ -91,7 +91,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
-    tasks: List<Task>? = emptyList(), onDelete: (Task) -> Unit, //pendiente de implementar
+    tasks: List<Task>? = emptyList(), onDeleteTask: (Task) -> Unit, //pendiente de implementar
     onComplete: (Task) -> Unit //pendiente de implementar
 ) {
     var detailTaskId by rememberSaveable { mutableStateOf<Long?>(null) }
@@ -114,7 +114,7 @@ private fun HomeContent(
 
     deleteTask?.let { task ->
         DeleteTaskDialog(task = task, onConfirm = {
-            //onDeleteTask(task)
+            onDeleteTask(task)
             deleteTaskId = null
         }, onDismiss = { deleteTaskId = null })
     }
