@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Edit
@@ -32,7 +31,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -52,11 +50,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.techun.dev.todoapp.core.composables.ToDoText
+import com.techun.dev.todoapp.core.composables.TodoDiaTopAppBar
 import com.techun.dev.todoapp.create.ui.composable.TodoDiaSelectionCard
 import com.techun.dev.todoapp.create.ui.composable.TodoDiaTimePickerDialog
 import com.techun.dev.todoapp.create.ui.composable.TodoDiaTimeSelector
@@ -84,7 +82,17 @@ fun CreateTaskScreen(
             }
         }
     }
-    CreateTaskContent(snackbarHostState = snackbarHostState)
+    CreateTaskContent(
+        description = uiState.title,
+        onDescriptionChange = viewModel::onTitleChanged,
+        selectedDate = uiState.date,
+        onSelectedDateChange = viewModel::onDateChanged,
+        startTime = uiState.startTime,
+        onStartTimeChange = viewModel::onStartTimeChanged,
+        endTime = uiState.endTime,
+        onEndTimeChange = viewModel::onEndTimeChanged,
+        snackbarHostState = snackbarHostState
+    )
 }
 
 
@@ -95,23 +103,16 @@ fun CreateTaskContent(
     onBackClick: () -> Unit = {},
     onSaveClick: (
         description: String, date: LocalDate, startTime: LocalTime, endTime: LocalTime, reminder: Boolean, type: String
-    ) -> Unit = { _, _, _, _, _, _ -> }
+    ) -> Unit = { _, _, _, _, _, _ -> },
+    description: String,
+    onDescriptionChange: (String) -> Unit,
+    selectedDate: LocalDate,
+    onSelectedDateChange: (LocalDate) -> Unit,
+    startTime: LocalTime,
+    onStartTimeChange: (LocalTime) -> Unit,
+    endTime: LocalTime,
+    onEndTimeChange: (LocalTime) -> Unit
 ) {
-    var description by remember {
-        mutableStateOf("Meeting with PR Department")
-    }
-
-    var selectedDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
-
-    var startTime by remember {
-        mutableStateOf(LocalTime.of(8, 0))
-    }
-
-    var endTime by remember {
-        mutableStateOf(LocalTime.of(10, 0))
-    }
 
     var reminder by remember {
         mutableStateOf(false)
@@ -148,47 +149,20 @@ fun CreateTaskContent(
     }
 
     val timeFormatter = remember {
-        DateTimeFormatter.ofPattern(
-            "h a", Locale.ENGLISH
-        )
+        DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
     }
 
-    Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { innerPadding ->
+    Scaffold(modifier = modifier, topBar = {
+        TodoDiaTopAppBar(
+            title = "Crear tarea", onBack = onBackClick
+        )
+    }, snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { innerPadding ->
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
-            // Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Volver"
-                    )
-                }
-
-                ToDoText(
-                    text = "Editar tarea",
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(modifier = Modifier.width(48.dp))
-            }
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -217,7 +191,7 @@ fun CreateTaskContent(
 
                     BasicTextField(
                         value = description,
-                        onValueChange = { description = it },
+                        onValueChange = onDescriptionChange,
                         modifier = Modifier.weight(1f),
                         textStyle = TextStyle(
                             fontSize = 16.sp, color = Color(0xFF252525)
@@ -404,8 +378,9 @@ fun CreateTaskContent(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let {
-                            selectedDate =
+                            onSelectedDateChange(
                                 Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
+                            )
                         }
                         showDatePicker = false
                     }) {
@@ -428,7 +403,7 @@ fun CreateTaskContent(
             TodoDiaTimePickerDialog(initialTime = startTime, onDismiss = {
                 showStartTimePicker = false
             }, onConfirm = {
-                startTime = it
+                onStartTimeChange(it)
                 showStartTimePicker = false
             })
         }
@@ -438,7 +413,7 @@ fun CreateTaskContent(
             TodoDiaTimePickerDialog(initialTime = endTime, onDismiss = {
                 showEndTimePicker = false
             }, onConfirm = {
-                endTime = it
+                onEndTimeChange(it)
                 showEndTimePicker = false
             })
         }

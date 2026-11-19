@@ -19,7 +19,12 @@ import java.time.LocalTime
 import kotlin.math.roundToInt
 
 data class CreateTaskUiState(
-    val title: String = "", val priority: Float = 0f, val isLoading: Boolean = false
+    val title: String = "",
+    val date: LocalDate = LocalDate.now(),
+    val startTime: LocalTime = LocalTime.now(),
+    val endTime: LocalTime = LocalTime.now().plusHours(1),
+    val priority: Float = 0f,
+    val isLoading: Boolean = false
 )
 
 sealed interface CreateTaskEvent {
@@ -46,6 +51,18 @@ class CreateTaskViewModel(private val addTaskUseCase: AddTaskUseCase) : ViewMode
 
     fun onTitleChanged(newTitle: String) {
         _uiState.update { it.copy(title = newTitle) }
+    }
+
+    fun onDateChanged(date: LocalDate) {
+        _uiState.update { it.copy(date = date) }
+    }
+
+    fun onStartTimeChanged(startTime: LocalTime) {
+        _uiState.update { it.copy(startTime = startTime) }
+    }
+
+    fun onEndTimeChanged(endTime: LocalTime) {
+        _uiState.update { it.copy(endTime = endTime) }
     }
 
     fun onPriorityChanged(newPriority: Float) {
